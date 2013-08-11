@@ -1,0 +1,35 @@
+﻿@model MiniDropbox.Web.Models.AccountLoginModel
+
+@{
+    ViewBag.Title = "LogIn";
+    Layout = "~/Views/shared/_BootstrapLayout.empty.cshtml";
+}
+
+
+@using (@Html.BeginForm("LogIn", "Account", FormMethod.Post, new { @class = "form-signin" }))
+{
+    <h2 class="form-signin-heading">Sign in</h2>
+    
+    @Html.DisplayNameFor(x=>x.EMail)
+    @Html.TextBoxFor(x=>x.EMail,new {@class="input-block-level"})
+    @Html.DisplayNameFor(x=>x.Password)
+    @Html.PasswordFor(x=>x.Password,new {@class="input-block-level"})
+    
+    @*<input type="text" class="input-block-level" placeholder="Email address">
+        <input type="password" class="input-block-level" placeholder="Password">
+       *@ <label class="checkbox">
+              <input type="checkbox" value="remember-me"> Remember me
+          </label>@*
+        
+        *@<button class="btn btn-large btn-primary" type="submit">Sign In</button>
+        @Html.ActionLink("Sign Up","SignUp","Account" ,new { @class = "btn btn-large btn-primary" })
+         <div class="clearfix"><br/></div>
+        @Html.ActionLink("Forgot your password?","PasswordRecovery");
+     
+    
+    //@Html.ActionLink("Sign Up here", "SignUp", new { @class = " btn btn-large btn-primary" })
+
+    //Don't have an account yet?       *@<button class="btn btn-large btn-inverse" type="button" formmethod="Get" >Sign Up</button>@*
+  
+}
+
