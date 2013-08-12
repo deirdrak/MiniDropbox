@@ -6,13 +6,6 @@ namespace MiniDropbox.Web.Models
 {
     public class AccountSignUpModel
     {
-            public AccountSignUpModel(int spaceLimit, int usedSpace, bool isArchived, bool isBlocked)
-            {
-                IsBlocked = isBlocked;
-                IsArchived = isArchived;
-                UsedSpace = usedSpace;
-                SpaceLimit = spaceLimit;
-            }
 
         [Display(Name = "Name: ")]
         [Required(ErrorMessage = "Required field", AllowEmptyStrings = false)]
@@ -40,9 +33,9 @@ namespace MiniDropbox.Web.Models
         [Compare("Password",ErrorMessage = "The passwords don't match!")]
         public string PasswordConfirm { get; set; }
 
-        public int SpaceLimit { get; private set; }
-        public int UsedSpace { get; private set; }
-        public bool IsArchived { get; private set; }
-        public bool IsBlocked { get; private set; }
+        //public int SpaceLimit { get; private set; }
+        //public int UsedSpace { get; private set; }
+        //public bool IsArchived { get; private set; }
+        //public bool IsBlocked { get; private set; }
     }
 }

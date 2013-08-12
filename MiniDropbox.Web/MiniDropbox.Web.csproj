@@ -176,11 +176,14 @@
     <Compile Include="Controllers\AccountSignUpController.cs" />
     <Compile Include="Controllers\BootstrapBaseController.cs" />
     <Compile Include="Controllers\ChangeUserSpaceLimitController.cs" />
+    <Compile Include="Controllers\CreateEditPackageController.cs" />
     <Compile Include="Controllers\DiskController.cs" />
     <Compile Include="Controllers\ExampleLayoutsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PackageListController.cs" />
     <Compile Include="Controllers\PasswordRecoveryController.cs" />
     <Compile Include="Controllers\PasswordResetController.cs" />
+    <Compile Include="Controllers\ReferralInviteController.cs" />
     <Compile Include="Controllers\RegisteredUsersListController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -195,8 +198,10 @@
     <Compile Include="Models\ChangeUserSpaceLimitModel.cs" />
     <Compile Include="Models\DiskContentModel.cs" />
     <Compile Include="Models\HomeInputModel.cs" />
+    <Compile Include="Models\PackageModel.cs" />
     <Compile Include="Models\PasswordRecoveryModel.cs" />
     <Compile Include="Models\PasswordResetModel.cs" />
+    <Compile Include="Models\ReferralInviteModel.cs" />
     <Compile Include="Models\RegisteredUsersListModel.cs" />
     <Compile Include="NavigationRoutes\INavigationRouteFilter.cs" />
     <Compile Include="NavigationRoutes\NamedRoute.cs" />
@@ -217,6 +222,7 @@
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\dropbox-logo3.gif" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Global.asax" />
@@ -271,6 +277,9 @@
     <Content Include="Views\PasswordReset\PasswordReset.cshtml" />
     <Content Include="Views\RegisteredUsersList\RegisteredUsersList.cshtml" />
     <Content Include="Views\ChangeUserSpaceLimit\ChangeUserSpaceLimit.cshtml" />
+    <Content Include="Views\PackageList\PackageList.cshtml" />
+    <Content Include="Views\CreateEditPackage\CreateEditPackage.cshtml" />
+    <Content Include="Views\ReferralInvite\ReferralInvite.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

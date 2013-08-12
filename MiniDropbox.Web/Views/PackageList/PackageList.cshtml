@@ -1,13 +1,13 @@
 ﻿@using BootstrapSupport
 @using NHibernate.Criterion
-@model List<MiniDropbox.Web.Models.RegisteredUsersListModel>
+@model List<MiniDropbox.Web.Models.PackageModel>
 
 @{
-    ViewBag.Title = "Registered Users List";
+    ViewBag.Title = "Packages List";
     Layout = "~/Views/shared/_BootstrapLayout.basic.cshtml";
 }
 
-<h2 style="text-align: center">Registered Users List</h2>
+<h2 style="text-align: center">Packages List</h2>
 <br/>
 
 <table class="table table-striped">
@@ -23,6 +23,9 @@
             <th></th>
         </tr>
     </thead>
+    <p>
+    @Html.ActionLink("Create New", "CreatePackage", null, new {@class = "btn btn-primary"})
+    </p>
     @{ int index = 0; }
     @foreach (var model in Model)
     {
@@ -44,10 +47,10 @@
                         @{
                             @Html.TryPartial("_actions", model)                            
                             var routevalues = model.GetIdValue();  
-                            <li>@Html.ActionLink("Change Space Limit", "ChangeUserSpaceLimit","ChangeUserSpaceLimit" ,new{userId=routevalues.Values.FirstOrDefault()},null)</li>
+                            <li>@Html.ActionLink("Edit", "EditPackage","PackageList" ,new{packageId=routevalues.Values.FirstOrDefault()},null)</li>
                             @*<li>@Html.ActionLink("Details", "Details", routevalues)</li>*@
                             @*<li class="divider"></li>*@
-                            <li>@Html.ActionLink("Block/Unblock User", "BlockUser","RegisteredUsersList",new{userId=routevalues.Values.FirstOrDefault()},null)</li>
+                            <li>@Html.ActionLink("Activate/Deactivate Package", "DeactivatePackage","PackageList",new{packageId=routevalues.Values.FirstOrDefault()},null)</li>
                                
                         }
                     </ul>
@@ -59,6 +62,3 @@
     }
 
 </table>
-<p>
-    @Html.ActionLink("Package Management", "PackageManagement", null, new {@class = "btn btn-primary"})
-</p>

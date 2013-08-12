@@ -25,9 +25,18 @@ namespace MiniDropbox.Web.Controllers
         }
         
         [HttpGet]
-        public ActionResult AccountSignUp()
+        public ActionResult AccountSignUp(long token)
         {
-            return View(new AccountSignUpModel(500,0,false,false));
+            if (token == 0)
+            {
+                return View(new AccountSignUpModel());    
+            }
+
+            var userReferring = _readOnlyRepository.GetById<Account>(token);
+            userReferring.SpaceLimit += 50;
+            _writeOnlyRepository.Update(userReferring);
+
+            return View(new AccountSignUpModel());
         }
        
         public ActionResult Cancelar()
@@ -54,6 +63,9 @@ namespace MiniDropbox.Web.Controllers
                 LastName = accountModel.LastName,
                 EMail = accountModel.EMail,
                 IsArchived = false,
+                IsBlocked = false,
+                SpaceLimit = 500,
+                UsedSpace = 0,
                 Password = EncriptacionMD5.Encriptar(accountModel.Password) 
             };
 

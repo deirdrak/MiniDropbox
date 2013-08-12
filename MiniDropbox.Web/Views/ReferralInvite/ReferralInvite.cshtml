@@ -1,0 +1,33 @@
+﻿@using BootstrapSupport
+@model MiniDropbox.Web.Models.ReferralInviteModel
+
+@{
+    ViewBag.Title = "Invite a Friend";
+    Layout = "~/Views/shared/_BootstrapLayout.basic.cshtml";
+}
+
+<h2>Invite a Friend to Mini DropBox</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <fieldset class="form-horizontal">
+        <legend><small>Instructions</small></legend>
+        <p>An e-mail would be sent to your friend containing a link where he(she) can signup</p>
+        @foreach (var property in Model.VisibleProperties())
+        {
+            using (Html.ControlGroupFor(property.Name))
+            {
+                @Html.Label(property.Name.ToSeparatedWords(), new {@class = "control-label"})
+                <div class="controls">
+                    @Html.Editor(property.Name, new {@class = "input-small"})
+                    @Html.ValidationMessage(property.Name, null, new {@class = "help-inline"})
+                </div>
+            }
+        }
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Send Invite</button>
+            @Html.ActionLink("Cancel", "Cancel", "ReferalInvite", new {@class = "btn btn-danger"})
+        </div>
+    </fieldset>
+}

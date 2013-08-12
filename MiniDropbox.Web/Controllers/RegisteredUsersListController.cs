@@ -52,5 +52,15 @@ namespace MiniDropbox.Web.Controllers
             return RedirectToAction("RegisteredUsersList");
         }
 
+        public ActionResult PackageManagement()
+        {
+            if (Session["userType"].ToString() != "Admin")
+            {
+                return null;
+            }
+
+            return RedirectToAction("PackageList", "PackageList");
+        }
+
     }
 }

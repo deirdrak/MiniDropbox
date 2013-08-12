@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>@ViewBag.Title</title>
+    <title>Mini DropBox</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="@Styles.Url("~/content/css")" rel="stylesheet"/>
     <style type="text/css">
@@ -45,19 +45,19 @@
     @Html.Partial("_html5shiv")
     @* favicons and touch icons go here *@
 </head>
-<body>
-    <div class="container">
+    <body>
+        <div class="container">
+            
+            @Html.Partial("_alerts")
+            @RenderBody()
+            <hr>
+            <footer>
+                <p>&copy; Company @System.DateTime.Now.ToString("yyyy")</p>
+            </footer>
 
-        @Html.Partial("_alerts")
-        @RenderBody()
-        <hr>
-        <footer>
-            <p>&copy; Company @System.DateTime.Now.ToString("yyyy")</p>
-        </footer>
-
-    </div> <!-- container -->
-    @Scripts.Render("~/js")
-    @RenderSection("Scripts", required: false)
-</body>
+        </div> <!-- container -->
+        @Scripts.Render("~/js")
+        @RenderSection("Scripts", required: false)
+    </body>
 </html>
 

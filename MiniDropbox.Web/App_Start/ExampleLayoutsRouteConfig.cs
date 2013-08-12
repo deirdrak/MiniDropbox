@@ -25,8 +25,10 @@ namespace BootstrapMvcSample
                 .AddChildRoute<AccountProfileController>("View Profile", c => c.Profile())
                 .AddChildRoute<DiskController>("My Files",c=>c.ListAllContent())
                 .AddChildRoute<PasswordRecoveryController>("Change Password",p=>p.PasswordRecovery())
-                .AddChildRoute<ExampleLayoutsController>("Refer a friend", c => c.Fluid())
+                .AddChildRoute<ReferralInviteController>("Refer a friend", c => c.ReferralInvite())
                 .AddChildRoute<AccountController>("Log Out",a=>a.LogOut());
+
+            
         }
     }
 }

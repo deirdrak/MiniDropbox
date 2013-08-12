@@ -44,8 +44,8 @@ namespace MiniDropbox.Web.Controllers
                 var data = ""+fechaActual.Day + fechaActual.Month + fechaActual.Year;
                 var token =pass+";"+ EncriptacionMD5.Encriptar(data);
 
-                //var url = "http://minidropbox-1.apphb.com/PasswordReset/PasswordReset";
-                var url = "http://localhost:1840/PasswordReset/PasswordReset";
+                var url = "http://minidropbox-1.apphb.com/PasswordReset/PasswordReset";
+                //var url = "http://localhost:1840/PasswordReset/PasswordReset";
 
                 var emailBody = new StringBuilder("<b>Go to the following link to change your password: </b>");
                 emailBody.Append("<br/>");

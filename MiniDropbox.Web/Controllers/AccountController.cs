@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
@@ -52,7 +53,7 @@ namespace MiniDropbox.Web.Controllers
 
         public ActionResult SignUp()
         {
-            return RedirectToAction("AccountSignUp", "AccountSignUp");
+            return RedirectToAction("AccountSignUp", "AccountSignUp", new {token=0});
         }
 
         public ActionResult PasswordRecovery()
