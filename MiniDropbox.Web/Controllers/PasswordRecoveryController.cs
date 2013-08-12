@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
 using MiniDropbox.Web.Models;
+using MiniDropbox.Web.Utils;
 
 namespace MiniDropbox.Web.Controllers
 {
@@ -26,7 +28,7 @@ namespace MiniDropbox.Web.Controllers
 
         public ActionResult Cancel()
         {
-            return RedirectToAction("LogIn", "Account");
+            return Session["userId"]==null ? RedirectToAction("LogIn", "Account") : RedirectToAction("ListAllContent", "Disk");
         }
 
         [HttpPost]
@@ -36,12 +38,29 @@ namespace MiniDropbox.Web.Controllers
 
             if (result.Any())
             {
-                var nameMail = result.FirstOrDefault().Name + result.FirstOrDefault().EMail+DateTime.Now.Date;
-                var token = EncriptacionMD5.Encriptar(nameMail);
-                var url = "";
-                var emailBody = "Go to the following link to change your password: "+url+"token"+token;
-                //Send the email
-                return Cancel();
+                var fechaActual = DateTime.Now.Date;
+
+                var pass = result.FirstOrDefault().Password;
+                var data = ""+fechaActual.Day + fechaActual.Month + fechaActual.Year;
+                var token =pass+";"+ EncriptacionMD5.Encriptar(data);
+
+                //var url = "http://minidropbox-1.apphb.com/PasswordReset/PasswordReset";
+                var url = "http://localhost:1840/PasswordReset/PasswordReset";
+
+                var emailBody = new StringBuilder("<b>Go to the following link to change your password: </b>");
+                emailBody.Append("<br/>");
+                emailBody.Append("<br/>");
+                emailBody.Append("<b>" + url + "?token=" +token + "<b>");
+                emailBody.Append("<br/>");
+                emailBody.Append("<br/>");
+                emailBody.Append("<b>This link is only valid through " + fechaActual.Day + "/" + fechaActual.Month + "/" + fechaActual.Year + "</b>");
+
+                if (MailSender.SendEmail(model.EMailAddress, emailBody.ToString()))
+                    return Cancel();
+               
+                Error("E-Mail failed to be sent, please try again!!!");
+                return View(model);
+               
             }
 
             Error("E-Mail address is not registered in this site!!!");

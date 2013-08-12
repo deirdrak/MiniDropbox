@@ -27,7 +27,7 @@ namespace MiniDropbox.Web.Controllers
         [HttpGet]
         public ActionResult AccountSignUp()
         {
-            return View(new AccountSignUpModel());
+            return View(new AccountSignUpModel(500,0,false,false));
         }
        
         public ActionResult Cancelar()

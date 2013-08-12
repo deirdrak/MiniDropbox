@@ -175,11 +175,13 @@
     <Compile Include="Controllers\AccountProfileController.cs" />
     <Compile Include="Controllers\AccountSignUpController.cs" />
     <Compile Include="Controllers\BootstrapBaseController.cs" />
+    <Compile Include="Controllers\ChangeUserSpaceLimitController.cs" />
     <Compile Include="Controllers\DiskController.cs" />
     <Compile Include="Controllers\ExampleLayoutsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PasswordRecoveryController.cs" />
     <Compile Include="Controllers\PasswordResetController.cs" />
+    <Compile Include="Controllers\RegisteredUsersListController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -190,10 +192,12 @@
     <Compile Include="Models\AccountLoginModel.cs" />
     <Compile Include="Models\AccountProfileModel.cs" />
     <Compile Include="Models\AccountSignUpModel.cs" />
+    <Compile Include="Models\ChangeUserSpaceLimitModel.cs" />
     <Compile Include="Models\DiskContentModel.cs" />
     <Compile Include="Models\HomeInputModel.cs" />
     <Compile Include="Models\PasswordRecoveryModel.cs" />
     <Compile Include="Models\PasswordResetModel.cs" />
+    <Compile Include="Models\RegisteredUsersListModel.cs" />
     <Compile Include="NavigationRoutes\INavigationRouteFilter.cs" />
     <Compile Include="NavigationRoutes\NamedRoute.cs" />
     <Compile Include="NavigationRoutes\NavigationExtensions.cs" />
@@ -265,6 +269,8 @@
     <Content Include="Views\AccountSignUp\AccountSignUp.cshtml" />
     <Content Include="Views\PasswordRecovery\PasswordRecovery.cshtml" />
     <Content Include="Views\PasswordReset\PasswordReset.cshtml" />
+    <Content Include="Views\RegisteredUsersList\RegisteredUsersList.cshtml" />
+    <Content Include="Views\ChangeUserSpaceLimit\ChangeUserSpaceLimit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

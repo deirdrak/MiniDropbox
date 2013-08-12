@@ -28,11 +28,22 @@ namespace MiniDropbox.Web.Controllers
         [HttpPost]
         public ActionResult LogIn(AccountLoginModel model)
         {
+            if (model.EMail == "Admin" && model.Password == "Admin4321")
+            {
+                Session["userType"] = "Admin";
+                return RedirectToAction("RegisteredUsersList", "RegisteredUsersList");
+            }
+
             var passwordEncripted = EncriptacionMD5.Encriptar(model.Password);
             var result = _readOnlyRepository.Query<Account>(x => x.EMail == model.EMail && x.Password==passwordEncripted);
 
             if (result.Any())
-                return RedirectToAction("ListAllContent", "Disk", new {userFiles=result.FirstOrDefault().Files});
+            {
+                Session["userId"] = result.FirstOrDefault().Id;
+                Session["userType"] = "User";
+                return RedirectToAction("ListAllContent", "Disk");
+            }
+                
            
             Error("E-Mail or Password is incorrect!!!");
             return View();
@@ -48,5 +59,12 @@ namespace MiniDropbox.Web.Controllers
         {
             return RedirectToAction("PasswordRecovery", "PasswordRecovery");
         }
+
+        public ActionResult LogOut()
+        {
+            Session.Clear();
+            return RedirectToAction("LogIn", "Account");
+        }
+        
     }
 }
