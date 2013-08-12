@@ -1,0 +1,48 @@
+﻿@using BootstrapSupport
+@using Microsoft.Web.Mvc.Html
+@using NHibernate.Properties
+@model MiniDropbox.Web.Models.ChangeUserSpaceLimitModel
+
+@{
+    ViewBag.Title = "Change User Space Limit";
+    Layout = "~/Views/shared/_BootstrapLayout.basic.cshtml";
+}
+
+<h2>Change Users Space Limit</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <fieldset class="form-horizontal">
+        <legend><small>Edit the info below</small></legend>
+        @foreach (var property in Model.VisibleProperties())
+        {
+            using(Html.ControlGroupFor(property.Name)){
+
+                if (property.Name == "UserId")
+                {
+                    continue;
+                }
+                
+                     @Html.Label(property.Name.ToSeparatedWords(), new {@class = "control-label"})
+                if (property.Name == "SpaceLimit")
+                {
+                    <div class="controls">
+                        @Html.Editor(property.Name, new {@class = "input-small"})
+                        @Html.ValidationMessage(property.Name, null, new {@class = "help-inline"})
+                    </div>
+                }
+                else
+                {
+                    <div class="control-label pull-left">
+                        @Html.Value(property.Name)
+                    </div>    
+                }
+            }
+        }
+		<div class="form-actions">
+		    <button type="submit" class="btn btn-primary">Save Changes</button>
+            @Html.ActionLink("Back", "Cancel","ChangeUserSpaceLimit",new { @class = "btn btn-danger" })
+          </div>
+    </fieldset>
+}
