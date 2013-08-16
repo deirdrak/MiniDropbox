@@ -8,7 +8,7 @@ namespace MiniDropbox.Web.Utils
 {
     public class MailSender
     {
-            public static bool SendEmail(string addresses,string body)
+            public static bool SendEmail(string addresses,string subject,string body)
             {
                 var mailMessage = new MailMessage
                 {
@@ -18,7 +18,7 @@ namespace MiniDropbox.Web.Utils
                 mailMessage.To.Add(addresses);
                 mailMessage.Body = body;
                 mailMessage.IsBodyHtml = true;
-                mailMessage.Subject = "Password Recovery";
+                mailMessage.Subject = subject;
 
                 mailMessage.Priority = MailPriority.Normal;
                 var smtp = new SmtpClient("smtp.mailgun.org")

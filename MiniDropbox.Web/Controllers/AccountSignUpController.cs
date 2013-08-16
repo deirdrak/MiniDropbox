@@ -27,14 +27,7 @@ namespace MiniDropbox.Web.Controllers
         [HttpGet]
         public ActionResult AccountSignUp(long token)
         {
-            if (token == 0)
-            {
-                return View(new AccountSignUpModel());    
-            }
-
-            var userReferring = _readOnlyRepository.GetById<Account>(token);
-            userReferring.SpaceLimit += 50;
-            _writeOnlyRepository.Update(userReferring);
+            Session["userReferralId"] = token;
 
             return View(new AccountSignUpModel());
         }
@@ -70,6 +63,16 @@ namespace MiniDropbox.Web.Controllers
             };
 
             _writeOnlyRepository.Create(account);
+
+            var token = Convert.ToInt64(Session["userReferralId"]);
+
+            if (token != 0)
+            {
+                var userReferring = _readOnlyRepository.GetById<Account>(token);
+                userReferring.SpaceLimit += 50;
+                _writeOnlyRepository.Update(userReferring);
+            }
+
             return Cancelar();
         }
 

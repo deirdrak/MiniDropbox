@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Microsoft.Web.Mvc;
 
@@ -11,7 +12,7 @@ namespace MiniDropbox.Web.Models
         [Required(ErrorMessage = "Required field", AllowEmptyStrings = false)]
         public string Name { get; set; }
 
-        [Display(Name = "LastName: ")]
+        [Display(Name = "Last Name: ")]
         [Required(ErrorMessage = "Required field", AllowEmptyStrings = false)]
         public string LastName { get; set; }
 

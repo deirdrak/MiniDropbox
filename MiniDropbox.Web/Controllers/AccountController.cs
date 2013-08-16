@@ -40,6 +40,18 @@ namespace MiniDropbox.Web.Controllers
 
             if (result.Any())
             {
+                if (result.FirstOrDefault().IsBlocked)
+                {
+                    Error("Your account has been blocked by the Admin due to violation of the terms of usage of this site!");
+                    return View();
+                }
+
+                if (result.FirstOrDefault().IsArchived)
+                {
+                    Error("Your account is inactive, to activate it again send an e-mail to support@minidropbox.com");
+                    return View();
+                }
+
                 Session["userId"] = result.FirstOrDefault().Id;
                 Session["userType"] = "User";
                 return RedirectToAction("ListAllContent", "Disk");

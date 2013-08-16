@@ -44,8 +44,8 @@ namespace MiniDropbox.Web.Controllers
                 var data = ""+fechaActual.Day + fechaActual.Month + fechaActual.Year;
                 var token =pass+";"+ EncriptacionMD5.Encriptar(data);
 
-                var url = "http://minidropbox-1.apphb.com/PasswordReset/PasswordReset";
-                //var url = "http://localhost:1840/PasswordReset/PasswordReset";
+                //var url = "http://minidropbox-1.apphb.com/PasswordReset/PasswordReset";
+                var url = "http://localhost:1840/PasswordReset/PasswordReset";
 
                 var emailBody = new StringBuilder("<b>Go to the following link to change your password: </b>");
                 emailBody.Append("<br/>");
@@ -55,7 +55,7 @@ namespace MiniDropbox.Web.Controllers
                 emailBody.Append("<br/>");
                 emailBody.Append("<b>This link is only valid through " + fechaActual.Day + "/" + fechaActual.Month + "/" + fechaActual.Year + "</b>");
 
-                if (MailSender.SendEmail(model.EMailAddress, emailBody.ToString()))
+                if (MailSender.SendEmail(model.EMailAddress,"Password Recovery" ,emailBody.ToString()))
                     return Cancel();
                
                 Error("E-Mail failed to be sent, please try again!!!");

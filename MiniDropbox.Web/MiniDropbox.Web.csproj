@@ -175,6 +175,7 @@
     <Compile Include="Controllers\AccountProfileController.cs" />
     <Compile Include="Controllers\AccountSignUpController.cs" />
     <Compile Include="Controllers\BootstrapBaseController.cs" />
+    <Compile Include="Controllers\ChangePasswordController.cs" />
     <Compile Include="Controllers\ChangeUserSpaceLimitController.cs" />
     <Compile Include="Controllers\CreateEditPackageController.cs" />
     <Compile Include="Controllers\DiskController.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Models\AccountLoginModel.cs" />
     <Compile Include="Models\AccountProfileModel.cs" />
     <Compile Include="Models\AccountSignUpModel.cs" />
+    <Compile Include="Models\ChangePasswordModel.cs" />
     <Compile Include="Models\ChangeUserSpaceLimitModel.cs" />
     <Compile Include="Models\DiskContentModel.cs" />
     <Compile Include="Models\HomeInputModel.cs" />
@@ -280,6 +282,7 @@
     <Content Include="Views\PackageList\PackageList.cshtml" />
     <Content Include="Views\CreateEditPackage\CreateEditPackage.cshtml" />
     <Content Include="Views\ReferralInvite\ReferralInvite.cshtml" />
+    <Content Include="Views\ChangePassword\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

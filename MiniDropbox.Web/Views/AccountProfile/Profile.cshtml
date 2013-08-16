@@ -16,20 +16,20 @@
         @foreach (var property in Model.VisibleProperties())
         {
             using(Html.ControlGroupFor(property.Name)){
-                if (property.Name != "Password")
-                {
+               
                      @Html.Label(property.Name.ToSeparatedWords(), new {@class = "control-label"})
                 <div class="controls">
                     @Html.Editor(property.Name, new {@class = "input-small"})
                     @Html.ValidationMessage(property.Name, null, new {@class = "help-inline"})
                 </div>
-                }
+                
             }
         }
-		<div class="form-actions">
-		    <button type="submit" class="btn btn-primary">Update Profile</button>
-		    @*<button type="submit" class="btn btn-danger" >Cancel </button>*@
+        <div class="form-actions">
+            @Html.ActionLink("Change Password", "ChangePassword","AccountProfile",new { @class = "btn btn-inverse" })
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+            @*<button type="submit" class="btn btn-danger" >Cancel </button>*@
             @Html.ActionLink("Back", "Cancel","AccountProfile",new { @class = "btn btn-danger" })
-          </div>
+        </div>
     </fieldset>
 }

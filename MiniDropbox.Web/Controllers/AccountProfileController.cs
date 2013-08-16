@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
@@ -30,8 +27,7 @@ namespace MiniDropbox.Web.Controllers
             return View(new AccountProfileModel
             {
                 Name = userData.Name,
-                LastName = userData.LastName,
-                EMail = userData.EMail
+                LastName = userData.LastName
             });
         }
 
@@ -43,7 +39,6 @@ namespace MiniDropbox.Web.Controllers
 
             userData.Name = model.Name;
             userData.LastName = model.LastName;
-            userData.EMail = model.EMail;
 
             _writeOnlyRepository.Update(userData);
 
@@ -55,7 +50,9 @@ namespace MiniDropbox.Web.Controllers
             return RedirectToAction("ListAllContent", "Disk");
         }
 
-
-
+        public ActionResult ChangePassword()
+        {
+            return RedirectToAction("ChangePassword", "ChangePassword");
+        }
     }
 }

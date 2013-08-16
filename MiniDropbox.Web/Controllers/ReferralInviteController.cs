@@ -42,17 +42,18 @@ namespace MiniDropbox.Web.Controllers
             var userData = _readOnlyRepository.GetById<Account>(userId);
 
             var emailBody = new StringBuilder("<b>Your friend </b>");
-            emailBody.Append(userData.Name+" "+userData.LastName);
+            emailBody.Append("<b>"+userData.Name+" "+userData.LastName+"</b>");
             emailBody.Append("<b> wants you to join to MiniDropBox, a site where you can store your files in the cloud!!</b>");
             emailBody.Append("<br/>");
             emailBody.Append("<b>To register in the site just click on the link below and fill up a quick form! Enjoy!!! </b>");
 
-            emailBody.Append("http://minidropbox-1.apphb.com/AccountSignUp/AccountSignUp?token=" + userId);
+            //emailBody.Append("http://minidropbox-1.apphb.com/AccountSignUp/AccountSignUp?token=" + userId);
+            emailBody.Append("http://localhost:1840/AccountSignUp/AccountSignUp?token=" + userId);
             emailBody.Append("<br/>");
             emailBody.Append("<br/>");
             emailBody.Append("<br/>");
 
-            if (MailSender.SendEmail(model.ReferalEmail, emailBody.ToString()))
+            if (MailSender.SendEmail(model.ReferalEmail,"Join Mini DropBox"  , emailBody.ToString()))
             {
                 Success("E-Mail sent successfully!!");
                 return View(model);
