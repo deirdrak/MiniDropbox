@@ -15,5 +15,6 @@ namespace MiniDropbox.Domain
         public virtual bool IsBlocked { get; set; }
 
         public virtual IList<File> Files { get; set; }
+        public virtual IList<Account> Referrals { get; set; }  
     }
 }

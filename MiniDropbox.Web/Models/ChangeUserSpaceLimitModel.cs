@@ -16,6 +16,7 @@ namespace MiniDropbox.Web.Models
         [Required]
         [RegularExpression("[0-9]*", ErrorMessage = "Only numbers")]
         public int SpaceLimit { get; set; }
+
         public bool Archived { get;  set; }
         public bool Blocked { get;  set; }
 

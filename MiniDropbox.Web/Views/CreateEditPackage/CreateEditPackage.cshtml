@@ -1,4 +1,5 @@
 ﻿@using BootstrapSupport
+@using Microsoft.Web.Mvc.Html
 @model MiniDropbox.Web.Models.PackageModel
 
 @{
@@ -18,10 +19,21 @@
             using(Html.ControlGroupFor(property.Name)){
                
                      @Html.Label(property.Name.ToSeparatedWords(), new {@class = "control-label"})
-                <div class="controls">
+
+                if (property.Name == "Description")
+                {
+                    <div class="controls">
+                        @Html.TextArea(property.Name, new {@class = "input-large"})
+                        @Html.ValidationMessage(property.Name, null, new {@class = "help-inline"})
+                    </div>
+                }
+                else
+                {
+                    <div class="controls">
                     @Html.Editor(property.Name, new {@class = "input-small"})
                     @Html.ValidationMessage(property.Name, null, new {@class = "help-inline"})
                 </div>
+                }
             }
         }
 		<div class="form-actions">

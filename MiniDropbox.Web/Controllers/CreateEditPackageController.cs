@@ -46,7 +46,10 @@ namespace MiniDropbox.Web.Controllers
                 Id=packageData.Id,
                 IsArchived = packageData.IsArchived,
                 Name = packageData.Name,
-                SpaceLimit = packageData.SpaceLimit
+                Description = packageData.Description,
+                SpaceLimit = packageData.SpaceLimit,
+                Price = packageData.Price,
+                DaysAvailable = packageData.DaysAvailable
             });
         }
 
@@ -65,7 +68,11 @@ namespace MiniDropbox.Web.Controllers
                     Id = model.Id,
                     IsArchived = model.IsArchived,
                     Name = model.Name,
-                    SpaceLimit = model.SpaceLimit
+                    Description = model.Description,
+                    Price=model.Price,
+                    SpaceLimit = model.SpaceLimit,
+                    CreationDate = DateTime.Now.Date,
+                    DaysAvailable = model.DaysAvailable
                 };
 
                 _writeOnlyRepository.Create(newPackage);
@@ -76,6 +83,9 @@ namespace MiniDropbox.Web.Controllers
                 packageData.Name = model.Name;
                 packageData.SpaceLimit = model.SpaceLimit;
                 packageData.IsArchived = model.IsArchived;
+                packageData.Price = model.Price;
+                packageData.Description = model.Description;
+                packageData.DaysAvailable = model.DaysAvailable;
 
                 _writeOnlyRepository.Update(packageData);
             }

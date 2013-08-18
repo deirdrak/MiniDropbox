@@ -5,11 +5,11 @@ namespace MiniDropbox.Web.Models
     public class AccountLoginModel
     {
         [Display(Name = "E-Mail: ")]
-        [Required]
+        [Required(ErrorMessage = "Required Field")]
         public string EMail { get; set; }
 
         [Display(Name = "Password: ")]
-        [Required]
+        [Required(ErrorMessage = "Required Field")]
         public string Password { get; set; }
     }
 }

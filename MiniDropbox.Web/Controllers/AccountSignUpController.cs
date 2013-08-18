@@ -62,14 +62,14 @@ namespace MiniDropbox.Web.Controllers
                 Password = EncriptacionMD5.Encriptar(accountModel.Password) 
             };
 
-            _writeOnlyRepository.Create(account);
+           var createdAccount= _writeOnlyRepository.Create(account);
 
             var token = Convert.ToInt64(Session["userReferralId"]);
 
             if (token != 0)
             {
                 var userReferring = _readOnlyRepository.GetById<Account>(token);
-                userReferring.SpaceLimit += 50;
+                userReferring.Referrals.Add(createdAccount);
                 _writeOnlyRepository.Update(userReferring);
             }
 

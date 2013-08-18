@@ -46,6 +46,9 @@ namespace MiniDropbox.Web.Controllers
                     Id = package.Id,
                     IsArchived = package.IsArchived,
                     Name = package.Name,
+                    Description = package.Description,
+                    Price=package.Price,
+                    DaysAvailable = package.DaysAvailable,
                     SpaceLimit = package.SpaceLimit
                 });
             }

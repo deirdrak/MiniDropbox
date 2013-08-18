@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
 using MiniDropbox.Web.Models;
+using MiniDropbox.Web.Utils;
 
 namespace MiniDropbox.Web.Controllers
 {
@@ -49,9 +51,36 @@ namespace MiniDropbox.Web.Controllers
         {
             var userData = _readOnlyRepository.GetById<Account>(model.UserId);
 
+            if (model.SpaceLimit < userData.UsedSpace)
+            {
+                Error("The space limit can't be less than the space currently used by the User!!!");
+                return View(model);
+            }
+
+            var emailBody =new StringBuilder();
+
+            if (model.SpaceLimit > userData.SpaceLimit)
+            {
+                emailBody.Append("<p><b>Your space limit has been increased!!!</b></p><p><b>You now have </b></p>");
+                emailBody.Append("<b>" + model.SpaceLimit + "<b>");
+                emailBody.Append("<b> available in your drive!!!!</b>");
+            }
+            else
+            {
+                emailBody.Append("<p><b>Your space limit has been decreased!!!</b></p><p><b>You now have </b></p>");
+                emailBody.Append("<b>" + model.SpaceLimit + "<b>");
+                emailBody.Append("<b> available in your drive!!!!</b>");
+            }
+
             userData.SpaceLimit = model.SpaceLimit;
 
             _writeOnlyRepository.Update(userData);
+               
+            emailBody.Append(
+                "<p><b>If you want additional information about the reasons of this decision contact the site admin at admin@minidropbox.com </b></p>");
+
+            MailSender.SendEmail(userData.EMail, "Space Limit Change", emailBody.ToString());
+
 
             return RedirectToAction("RegisteredUsersList", "RegisteredUsersList");
         }
