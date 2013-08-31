@@ -7,6 +7,7 @@ using AcklenAvenue.Data.NHibernate;
 using DomainDrivenDatabaseDeployer;
 using FluentNHibernate.Cfg.Db;
 using MiniDropbox.Data;
+using MiniDropbox.Domain;
 using NHibernate;
 using NHibernate.Linq;
 
@@ -39,10 +40,12 @@ namespace MiniDropbox.DatabaseDeployer
                             });
                 tx.Commit();
             }
+
             session.Close();
             sessionFactory.Close();
             Console.WriteLine("Seed data added.");
             Thread.Sleep(2000);
+
         }
     }
 }

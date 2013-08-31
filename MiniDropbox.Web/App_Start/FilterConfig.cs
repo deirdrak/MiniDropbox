@@ -8,8 +8,8 @@ namespace MiniDropbox.Web
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
+            filters.Add(new HandleSecurityAttribute(), 0);
             filters.Add(new HandleErrorAttribute());
-            //filters.Add(new HandleSecurityAttribute(),0);
         }
     }
 }

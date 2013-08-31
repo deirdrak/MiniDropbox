@@ -38,8 +38,7 @@ namespace MiniDropbox.Web.Controllers
         [HttpPost]
         public ActionResult ReferralInvite(ReferralInviteModel model)
         {
-            var userId = Convert.ToInt64(Session["userId"]);
-            var userData = _readOnlyRepository.GetById<Account>(userId);
+            var userData = _readOnlyRepository.First<Account>(x => x.EMail == User.Identity.Name);
 
             var emailBody = new StringBuilder("<b>Your friend </b>");
             emailBody.Append("<b>"+userData.Name+" "+userData.LastName+"</b>");
@@ -48,7 +47,7 @@ namespace MiniDropbox.Web.Controllers
             emailBody.Append("<b>To register in the site just click on the link below and fill up a quick form! Enjoy!!! </b>");
 
             //emailBody.Append("http://minidropbox-1.apphb.com/AccountSignUp/AccountSignUp?token=" + userId);
-            emailBody.Append("http://localhost:1840/AccountSignUp/AccountSignUp?token=" + userId);
+            emailBody.Append("http://localhost:1840/AccountSignUp/AccountSignUp?token=" + userData.Id);
             emailBody.Append("<br/>");
             emailBody.Append("<br/>");
             emailBody.Append("<br/>");

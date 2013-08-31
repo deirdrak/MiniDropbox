@@ -11,5 +11,7 @@ namespace MiniDropbox.Web.Models
         [Display(Name = "Password: ")]
         [Required(ErrorMessage = "Required Field")]
         public string Password { get; set; }
+
+        public bool RememberMe { get; set; }
     }
 }

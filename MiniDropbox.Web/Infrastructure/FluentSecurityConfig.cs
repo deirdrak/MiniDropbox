@@ -9,6 +9,16 @@ using MiniDropbox.Web.Controllers;
 
 namespace MiniDropbox.Web.Infrastructure
 {
+    public static class SecurityHelpers
+        {
+            public static IEnumerable<object> UserRoles()
+            {
+                var listRoles = new List<string> {"Admin", "User"};
+                return listRoles;
+            }
+        }
+
+
     public static class FluentSecurityConfig
     {
         public static void Configure()
@@ -16,11 +26,20 @@ namespace MiniDropbox.Web.Infrastructure
             SecurityConfigurator.Configure(configuration =>
             {
                 configuration.GetAuthenticationStatusFrom(() => HttpContext.Current.User.Identity.IsAuthenticated);
+                configuration.GetRolesFrom(SecurityHelpers.UserRoles);
 
                 configuration.ForAllControllers().DenyAnonymousAccess();
-                configuration.For<AccountController>(x => x.LogIn()).Ignore();
-                configuration.For<AccountSignUpController>(x => x.AccountSignUp(0)).Ignore();
-                configuration.For<HomeController>(x => x.Create()).RequireRole(new object[] {"Admin"});
+                configuration.For<AccountController>().Ignore();
+                configuration.For<AccountSignUpController>().Ignore();
+                configuration.For<PasswordRecoveryController>().Ignore();
+                configuration.For<PasswordResetController>().Ignore();
+                //configuration.For<DiskController>().RequireRole(new object[] { "User" });
+
+                //configuration.For<RegisteredUsersListController>().RequireRole(new object[] {"Admin"});
+                //configuration.For<PackageListController>().RequireRole(new object[] {"Admin"});
+                //configuration.For<CreateEditPackageController>().RequireRole(new object[] { "Admin" });
+                //configuration.For<ChangeUserSpaceLimitController>().RequireRole(new object[] { "Admin" });
+
                 configuration.ResolveServicesUsing(type =>
                 {
                     if (type == typeof(IPolicyViolationHandler))

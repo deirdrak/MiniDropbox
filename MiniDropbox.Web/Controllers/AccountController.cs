@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
@@ -29,31 +32,42 @@ namespace MiniDropbox.Web.Controllers
         [HttpPost]
         public ActionResult LogIn(AccountLoginModel model)
         {
-            if (model.EMail == "Admin" && model.Password == "Admin4321")
-            {
-                Session["userType"] = "Admin";
-                return RedirectToAction("RegisteredUsersList", "RegisteredUsersList");
-            }
-
             var passwordEncripted = EncriptacionMD5.Encriptar(model.Password);
-            var result = _readOnlyRepository.Query<Account>(x => x.EMail == model.EMail && x.Password==passwordEncripted);
+            var result = _readOnlyRepository.First<Account>(x => x.EMail == model.EMail && x.Password==passwordEncripted);
 
-            if (result.Any())
+            if (result != null)
             {
-                if (result.FirstOrDefault().IsBlocked)
+                if (result.IsBlocked)
                 {
-                    Error("Your account has been blocked by the Admin due to violation of the terms of usage of this site!");
+                    Error(
+                        "Your account has been blocked by the Admin due to violation of the terms of usage of this site!");
                     return View();
                 }
 
-                if (result.FirstOrDefault().IsArchived)
+                if (result.IsArchived)
                 {
                     Error("Your account is inactive, to activate it again send an e-mail to support@minidropbox.com");
                     return View();
                 }
 
-                Session["userId"] = result.FirstOrDefault().Id;
-                Session["userType"] = "User";
+                //List<string> roles = result.Roles.Select(x => x.Name).ToList();
+                var roles = result.IsAdmin
+                    ? new List<string>(new[] {"Admin","User1"})
+                    : new List<string>(new[] {"User","User2"});
+
+                FormsAuthentication.SetAuthCookie(model.EMail, model.RememberMe);
+                //var y = FormsAuthentication.GetAuthCookie(model.EMail, model.RememberMe);
+                SetAuthenticationCookie(model.EMail, roles);
+                
+                //bool isInRole = User.IsInRole("Admin");
+                //bool isNormalUser = User.IsInRole("User");
+
+                if (result.IsAdmin)
+                {
+                    return RedirectToAction("RegisteredUsersList", "RegisteredUsersList");
+                }
+
+
                 return RedirectToAction("ListAllContent", "Disk");
             }
                 
@@ -62,7 +76,7 @@ namespace MiniDropbox.Web.Controllers
             return View();
         }
 
-
+       
         public ActionResult SignUp()
         {
             return RedirectToAction("AccountSignUp", "AccountSignUp", new {token=0});
@@ -75,7 +89,7 @@ namespace MiniDropbox.Web.Controllers
 
         public ActionResult LogOut()
         {
-            Session.Clear();
+            FormsAuthentication.SignOut();
             return RedirectToAction("LogIn", "Account");
         }
         

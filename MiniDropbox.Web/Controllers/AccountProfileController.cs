@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using AutoMapper;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
@@ -21,21 +22,17 @@ namespace MiniDropbox.Web.Controllers
         [HttpGet]
         public new ActionResult Profile()
         {
-            long userId = Convert.ToInt64(Session["userId"]);
-            var userData = _readOnlyRepository.GetById<Account>(userId);
+            //long userId = Convert.ToInt64(Session["userId"]);
+            var userData = _readOnlyRepository.First<Account>(x=>x.EMail==User.Identity.Name);
 
-            return View(new AccountProfileModel
-            {
-                Name = userData.Name,
-                LastName = userData.LastName
-            });
+            return View(Mapper.Map<AccountProfileModel>(userData));
         }
 
         [HttpPost]
         public ActionResult Profile(AccountProfileModel model)
         {
-            long userId = Convert.ToInt64(Session["userId"]);
-            var userData = _readOnlyRepository.GetById<Account>(userId);
+            //long userId = Convert.ToInt64(Session["userId"]);
+            var userData = _readOnlyRepository.First<Account>(x => x.EMail == User.Identity.Name);
 
             userData.Name = model.Name;
             userData.LastName = model.LastName;

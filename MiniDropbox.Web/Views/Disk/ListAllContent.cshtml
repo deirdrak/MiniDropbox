@@ -6,7 +6,17 @@
     Layout = "~/Views/shared/_BootstrapLayout.basic.cshtml";
 }
 
-<h4>@Model.GetLabel() <small>Listing</small></h4>
+<script type="text/javascript">
+    //$(document).ready(function () {
+       function showModal() {
+            
+           $('#FileUploadPopUp').modal('toggle');
+            
+        }
+    //});
+</script>
+
+<h4><small>Files List</small></h4>
 <table class="table table-striped">
     <caption></caption>
     <thead>
@@ -17,6 +27,8 @@
                     @property.GetLabel().ToSeparatedWords()
                 </th>
             }
+            
+            <a class="icon-upload pull-right" onclick="showModal();" href="#"></a>
             <th></th>
         </tr>
     </thead>
@@ -52,10 +64,23 @@
 
             </td>
         </tr>
-            index++;
+        index++;
     }
 
 </table>
-<p>
-    @*@Html.ActionLink("Create New", "Create", null, new {@class = "btn"})*@
-</p>
+<div class="modal hide fade in modal-form" id="FileUploadPopUp">
+    <div class="control-group modal-body">
+       @using (@Html.BeginForm("FileUpload", "Disk", FormMethod.Post, new { enctype = "multipart/form-data" }))
+       {
+            <label class="control-label">Select a file: </label>
+           <input type="file" name="fileControl"/>
+           <div class="form-actions">
+               <button type="submit" class="btn-primary" >Upload</button>
+           </div>
+       }
+        
+    </div>
+</div>
+
+
+

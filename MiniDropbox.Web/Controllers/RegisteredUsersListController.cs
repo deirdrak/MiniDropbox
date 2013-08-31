@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
@@ -26,21 +27,16 @@ namespace MiniDropbox.Web.Controllers
         [HttpGet]
         public ActionResult RegisteredUsersList()
         {
-            if (Session["userType"].ToString() != "Admin")
-            {
-                return null;
-            }
+            //if (Session["userType"].ToString() != "Admin")
+            //{
+            //    return null;
+            //}
 
-            var usersList = _readOnlyRepository.GetAll<Account>();
-            var castedList = new List<RegisteredUsersListModel>();
+            var usersList = _readOnlyRepository.GetAll<Account>().Select(account => Mapper.Map<RegisteredUsersListModel>(account)).ToList();
 
-            foreach (var account in usersList)
-            {
-                castedList.Add(new RegisteredUsersListModel(account.Id, account.IsArchived, account.Name,
-                    account.LastName, account.EMail, account.IsBlocked, account.SpaceLimit));
-            }
+            //var castedList = usersList;
 
-            return View(castedList);
+            return View(usersList);
         }
         
         public ActionResult BlockUser(long userId)

@@ -28,7 +28,7 @@ namespace MiniDropbox.Web.Controllers
         public ActionResult AccountSignUp(long token)
         {
             Session["userReferralId"] = token;
-
+            
             return View(new AccountSignUpModel());
         }
        
@@ -48,19 +48,25 @@ namespace MiniDropbox.Web.Controllers
                 return View(model);
             }
 
-            var accountModel = Mapper.Map<AccountSignUpModel>(model);
+            var account = Mapper.Map<Account>(model);
+            account.IsArchived = false;
+            account.IsAdmin = false;
+            account.IsBlocked = false;
+            account.SpaceLimit = 500;
+            account.Password = EncriptacionMD5.Encriptar(model.Password);
 
-            var account = new Account
-            {
-                Name = accountModel.Name,
-                LastName = accountModel.LastName,
-                EMail = accountModel.EMail,
-                IsArchived = false,
-                IsBlocked = false,
-                SpaceLimit = 500,
-                UsedSpace = 0,
-                Password = EncriptacionMD5.Encriptar(accountModel.Password) 
-            };
+            //var account = new Account
+            //{
+            //    Name = accountModel.Name,
+            //    LastName = accountModel.LastName,
+            //    EMail = accountModel.EMail,
+            //    IsArchived = false,
+            //    IsBlocked = false,
+            //    SpaceLimit = 500,
+            //    UsedSpace = 0,
+            //    Password = EncriptacionMD5.Encriptar(accountModel.Password) 
+            //};
+            //account.AddRole(new Role{Name = "User",IsArchived = false});
 
            var createdAccount= _writeOnlyRepository.Create(account);
 

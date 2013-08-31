@@ -28,7 +28,7 @@ namespace MiniDropbox.Web.Controllers
             if (token == "ErrorPostback")
             {
                 Error("Link has expired!!!");
-                return null;
+                return View();
             }
            
             var fechaActual = DateTime.Now.Date;

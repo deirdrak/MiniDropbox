@@ -60,7 +60,7 @@ namespace MiniDropbox.Web
                                                                           ConnectionString(
                                                                               x =>
                                                                               x.FromConnectionStringWithKey(
-                                                                                  "MiniDropbox.Remote"));
+                                                                                  "MiniDropbox.Local"));
             ISessionFactory sessionFactory = new SessionFactoryBuilder(new MappingScheme(), databaseConfiguration)
                 .Build();
 
@@ -111,6 +111,8 @@ namespace MiniDropbox.Web
                 string[] roles = authTicket.UserData.Split(new[] { '|' });
                 var fi = (FormsIdentity)(Context.User.Identity);
                 Context.User = new GenericPrincipal(fi, roles);
+
+                
             }
         }
     }
