@@ -285,6 +285,7 @@
     <Content Include="Views\CreateEditPackage\CreateEditPackage.cshtml" />
     <Content Include="Views\ReferralInvite\ReferralInvite.cshtml" />
     <Content Include="Views\ChangePassword\ChangePassword.cshtml" />
+    <Content Include="Views\Disk\FileUploadModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

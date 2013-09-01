@@ -15,6 +15,7 @@ using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
 using MiniDropbox.Web.Models;
 using NHibernate.Mapping;
+using File = MiniDropbox.Domain.File;
 
 namespace MiniDropbox.Web.Controllers
 {
@@ -32,9 +33,6 @@ namespace MiniDropbox.Web.Controllers
         [HttpGet]
         public ActionResult ListAllContent()
         {
-            
-            //long userId = Convert.ToInt64(Session["userId"]);
-            var Xx = User.Identity;
             var userFiles = _readOnlyRepository.First<Account>(x=>x.EMail==User.Identity.Name).Files;
 
             var userContent = new List<DiskContentModel>();
@@ -44,7 +42,8 @@ namespace MiniDropbox.Web.Controllers
                 if (file == null)
                     continue;
 
-                userContent.Add(Mapper.Map<DiskContentModel>(file));
+                if(!file.IsArchived)
+                    userContent.Add(Mapper.Map<DiskContentModel>(file));
             }
 
             if (userContent.Count == 0)
@@ -61,6 +60,12 @@ namespace MiniDropbox.Web.Controllers
             return View(userContent);
         }
 
+        [HttpGet]
+        public PartialViewResult FileUploadModal()
+        {
+            return PartialView();
+        }
+
         [HttpPost]
         public ActionResult FileUpload(HttpPostedFileBase fileControl)
         {
@@ -70,11 +75,18 @@ namespace MiniDropbox.Web.Controllers
                 return RedirectToAction("ListAllContent");
             }
 
-            var x = fileControl.ContentLength;
-            var y = fileControl.InputStream.Length;
+            var fileSize = fileControl.ContentLength;
+
+            if (fileSize > 10485760)
+            {
+                Error("The file must be of 10 MB or less!!!");
+                return RedirectToAction("ListAllContent");
+            }
+
+            var userData = _readOnlyRepository.First<Account>(x => x.EMail == User.Identity.Name);
 
             var fileName = Path.GetFileName(fileControl.FileName);
-            var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/");
+            var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/"+userData.EMail+"/");
             var directoryInfo = new DirectoryInfo(serverFolderPath);
 
             if (!directoryInfo.Exists)
@@ -84,11 +96,52 @@ namespace MiniDropbox.Web.Controllers
 
             var path = Path.Combine(serverFolderPath, fileName);
 
+            var fileInfo = new DirectoryInfo(serverFolderPath);
+
+            if (fileInfo.Exists)
+            {
+                var bddInfo = userData.Files.FirstOrDefault(f => f.Name == fileName);
+                bddInfo.ModifiedDate = DateTime.Now;
+                bddInfo.Type = fileControl.ContentType;
+                bddInfo.FileSize = fileSize;
+            }
+            else
+            {
+                userData.Files.Add(new File
+                {
+                    Name = fileName,
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now,
+                    FileSize = fileSize,
+                    Type = fileControl.ContentType,
+                    Url = serverFolderPath,
+                    IsArchived = false
+                });
+            }
+
             fileControl.SaveAs(path);
+            _writeOnlyRepository.Update(userData);
 
             Success("File uploaded successfully!!! :D");
             return RedirectToAction("ListAllContent");
         }
 
+        public ActionResult DeleteFile(int fileId)
+        {
+            var userData =_readOnlyRepository.First<Account>(a => a.EMail == User.Identity.Name);
+            var fileToDelete = userData.Files.FirstOrDefault(f => f.Id == fileId);
+
+            if (fileToDelete != null)
+            {
+                
+                System.IO.File.Delete(fileToDelete.Url+fileToDelete.Name);
+
+                fileToDelete.IsArchived = true;
+
+                _writeOnlyRepository.Update(userData);
+            }
+
+            return RedirectToAction("ListAllContent");
+        }
     }
 }

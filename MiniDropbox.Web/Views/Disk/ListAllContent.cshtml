@@ -7,13 +7,18 @@
 }
 
 <script type="text/javascript">
-    //$(document).ready(function () {
        function showModal() {
             
-           $('#FileUploadPopUp').modal('toggle');
-            
-        }
-    //});
+           var url = $('#FileUploadPopUp').data('url');
+
+           $.get(url, function (data) {
+               $('#FileUploadPopUp').html(data);
+
+               //$('#gameModal').modal('show');
+               $('#FileUploadPopUp').modal('toggle');
+           });
+       }
+       
 </script>
 
 <h4><small>Files List</small></h4>
@@ -27,10 +32,10 @@
                     @property.GetLabel().ToSeparatedWords()
                 </th>
             }
-            
-            <a class="icon-upload pull-right" onclick="showModal();" href="#"></a>
             <th></th>
         </tr>
+        <a class="icon-upload pull-right" onclick="showModal();" href="#"></a>
+        <a class="icon-folder-open pull-right" onclick="showModal();" href="#"></a>
     </thead>
     @{ int index = 0; }
     @foreach (var model in Model)
@@ -53,10 +58,9 @@
                         @{
                             @Html.TryPartial("_actions", model)                            
                             var routevalues = model.GetIdValue();  
-                            <li>@Html.ActionLink("Edit", "Edit", routevalues)</li>
                             <li>@Html.ActionLink("Details", "Details", routevalues)</li>
                             <li class="divider"></li>
-                            <li>@Html.ActionLink("Delete", "Delete", routevalues)</li>
+                            <li>@Html.ActionLink("Delete", "DeleteFile",new {@fileId=routevalues.Values.FirstOrDefault()} )</li>
                                
                         }
                     </ul>
@@ -68,19 +72,17 @@
     }
 
 </table>
-<div class="modal hide fade in modal-form" id="FileUploadPopUp">
-    <div class="control-group modal-body">
-       @using (@Html.BeginForm("FileUpload", "Disk", FormMethod.Post, new { enctype = "multipart/form-data" }))
-       {
-            <label class="control-label">Select a file: </label>
-           <input type="file" name="fileControl"/>
-           <div class="form-actions">
-               <button type="submit" class="btn-primary" >Upload</button>
-           </div>
-       }
-        
-    </div>
+
+<div class="modal hide fade in modal-form" id="FileUploadPopUp"  data-url='@Url.Action("FileUploadModal", "Disk")'>
+    
 </div>
 
+<div class="modal hide fade in modal-form" id="FileDeletePopUp">
+    <img class="badge-warning"/>
+    <label class="control-label">Are you sure you want to delete this file? It would be permanently removed</label>
 
+</div>
 
+@*data-url='@Url.Action("FileUploadModal")'*@
+
+@*new { enctype = "multipart/form-data" }*@
