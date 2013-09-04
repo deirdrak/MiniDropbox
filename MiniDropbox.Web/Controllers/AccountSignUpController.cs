@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -9,6 +11,7 @@ using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
 using MiniDropbox.Web.Models;
+using File = System.IO.File;
 
 
 namespace MiniDropbox.Web.Controllers
@@ -79,6 +82,30 @@ namespace MiniDropbox.Web.Controllers
                 _writeOnlyRepository.Update(userReferring);
             }
 
+            var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/" + account.EMail);
+            Directory.CreateDirectory(serverFolderPath);
+
+            var sharedDirectory =serverFolderPath + "/Shared";
+            Directory.CreateDirectory(sharedDirectory);
+
+            if (createdAccount.Files == null)
+            {
+                createdAccount.Files= new List<Domain.File>();
+            }
+
+            createdAccount.Files.Add(new Domain.File
+            {
+                CreatedDate = DateTime.Now,
+                FileSize = 0,
+                IsArchived = false,
+                IsDirectory = true,
+                Name = "Shared",
+                Url = serverFolderPath,
+                Type = "",
+                ModifiedDate = DateTime.Now
+            });
+
+            _writeOnlyRepository.Update(createdAccount);
             return Cancelar();
         }
 

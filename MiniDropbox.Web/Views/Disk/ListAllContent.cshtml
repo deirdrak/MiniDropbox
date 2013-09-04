@@ -2,30 +2,83 @@
 @model List<MiniDropbox.Web.Models.DiskContentModel>
 
 @{
-    ViewBag.Title = "MyContent";
+    ViewBag.Title = "My Content";
     Layout = "~/Views/shared/_BootstrapLayout.basic.cshtml";
 }
 
 <script type="text/javascript">
-       function showModal() {
+    function showModal() {
             
-           var url = $('#FileUploadPopUp').data('url');
+        var url = $('#FileUploadPopUp').data('url');
 
-           $.get(url, function (data) {
-               $('#FileUploadPopUp').html(data);
+        $.get(url, function (data) {
+            $('#FileUploadPopUp').html(data);
 
-               //$('#gameModal').modal('show');
-               $('#FileUploadPopUp').modal('toggle');
-           });
-       }
+            //$('#gameModal').modal('show');
+            $('#FileUploadPopUp').modal('toggle');
+        });
+    }
+       
+    function showNewFolderModal() {
+        $('#createFolderModal').modal('toggle');
+        $('#folderName').val();
+    }
+    
+    function showFileDeleteMessage(fileId) {
+        $('#FileDeleteMessage').modal('toggle');
+    }
+    
+    function Search()
+    {
+        var searchText = document.getElementById('searchTerm').value;
+        var targetTable = document.getElementById('dataTable');
+        var targetTableColCount;
+
+        //Loop through table rows
+        for (var rowIndex = 0; rowIndex < targetTable.rows.length; rowIndex++) {
+            var rowData = '';
+
+            //Get column count from header row
+            if (rowIndex == 0) {
+                targetTableColCount = targetTable.rows.item(rowIndex).cells.length;
+                continue; //do not execute further code for header row.
+            }
+
+            //Process data rows. (rowIndex >= 1)
+            for (var colIndex = 0; colIndex < targetTableColCount; colIndex++) {
+                rowData += targetTable.rows.item(rowIndex).cells.item(colIndex).textContent;
+            }
+
+            //If search term is not found in row data
+            //then hide the row, else show
+            if (rowData.indexOf(searchText) == -1)
+                targetTable.rows.item(rowIndex).style.display = 'none';
+            else
+                targetTable.rows.item(rowIndex).style.display = 'table-row';
+        }
+    }
        
 </script>
+<div class="pull-right" style="padding-left: 10px">
+        @using (@Html.BeginForm("ListFileSearchResult", "SearchResult"))
+        {
+            <input type="text" id="searchTxt" name="searchTxt" class="input-medium inline search-query"/>
+            <button class="btn btn-inverse btn-small" type="submit">Search</button>       
+        }
+</div>
+<div class="pull-right" style="vertical-align: central">
+    <a class="icon-upload " onclick="showModal();" href="#" title="Upload File"  style="padding-left: 10px"></a>
+    <a class="icon-folder-open" onclick="showNewFolderModal();" href="#" title="New Folder"  style="padding-left: 10px"></a>
+</div>
 
-<h4><small>Files List</small></h4>
+
+<h2 style="text-align: center">Files List</h2>
+<label class="text-info">@Session["ActualPath"].ToString()</label>
 <table class="table table-striped">
     <caption></caption>
     <thead>
         <tr>
+            <td></td>
             @foreach (var property in Model[0].VisibleProperties())
             {
                 <th>
@@ -34,22 +87,44 @@
             }
             <th></th>
         </tr>
-        <a class="icon-upload pull-right" onclick="showModal();" href="#"></a>
-        <a class="icon-folder-open pull-right" onclick="showModal();" href="#"></a>
     </thead>
     @{ int index = 0; }
     @foreach (var model in Model)
     {
         ViewData[index.ToString()] = model;
         <tr>
+            @if (string.IsNullOrEmpty(model.Type))
+            {
+                <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/folder.png" title=""/> </td>
+            }
+            else if (model.Type.Contains("jpeg"))
+            {
+                <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/file_extension_jpeg.png" title=""/></td>
+            }
+            else if (model.Type.Contains("png"))
+            {
+                 <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/file_extension_png.png" title=""/></td>
+            }
+            else
+            {
+                <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/document_empty.png" title=""/></td>
+            }
+
             @foreach (var property in model.VisibleProperties())
             {
                 <td>
-                    @Html.Display(index + "." + property.Name)
+                    @if (property.Name == "Name" && string.IsNullOrEmpty(model.Type))
+                    {
+                        @Html.ActionLink("" + @Html.Display(index + "." + property.Name), "ListFolderContent", new { @folderName = model.Name }, new { @class = "btn-link" })
+                    }
+                    else
+                    {
+                         @Html.Display(index + "." + property.Name)
+                    }
                 </td>                    
             }
             <td>
-                <div class="btn-group">
+                <div class="btn-group ">
                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                         Action
                         <span class="caret"></span>
@@ -57,10 +132,15 @@
                     <ul class="dropdown-menu">
                         @{
                             @Html.TryPartial("_actions", model)                            
-                            var routevalues = model.GetIdValue();  
-                            <li>@Html.ActionLink("Details", "Details", routevalues)</li>
-                            <li class="divider"></li>
-                            <li>@Html.ActionLink("Delete", "DeleteFile",new {@fileId=routevalues.Values.FirstOrDefault()} )</li>
+                            var routevalues = model.GetIdValue();
+
+                            if (!string.IsNullOrEmpty(model.Type))
+                            {
+                                <li>@Html.ActionLink("Download", "DownloadFile", new {@fileId=routevalues.Values.FirstOrDefault()})</li>
+                            }
+                                
+                            @*<li class="divider"></li>*@
+                            <li>@Html.ActionLink("Delete", "DeleteFile", new { @fileId = routevalues.Values.FirstOrDefault() })</li>
                                
                         }
                     </ul>
@@ -68,7 +148,7 @@
 
             </td>
         </tr>
-        index++;
+            index++;
     }
 
 </table>
@@ -77,9 +157,32 @@
     
 </div>
 
-<div class="modal hide fade in modal-form" id="FileDeletePopUp">
+<div class="modal hide fade in modal-form" id="FileDeleteMessage">
     <img class="badge-warning"/>
     <label class="control-label">Are you sure you want to delete this file? It would be permanently removed</label>
+    <div class="modal-footer">
+            @Html.ActionLink("Delete", "DeleteFile", "Disk", new { @class = "btn btn-primary" })
+            <a class="btn btn-danger" href="#" data-dismiss="modal">Close</a>
+        </div>
+</div>
+<div id="createFolderModal" class="modal hide fade in modal-form" >
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>Create New Folder</h3>
+</div>
+    <div class="modal-body">
+         @using (@Html.BeginForm("CreateFolder", "Disk", FormMethod.Post, new { enctype = "multipart/form-data" }))
+         {
+             <label class="control-label">Folder Name: </label>
+             <input type="text" id="folderName" name="folderName" class="input-medium"/>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" >Create</button>
+                <a class="btn btn-danger" href="#" data-dismiss="modal">Close</a>
+            </div>
+        
+         }
+      
+    </div>
 
 </div>
 

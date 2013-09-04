@@ -10,6 +10,7 @@ using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
 using MiniDropbox.Web.Models;
 using MiniDropbox.Web.Utils;
+using Ninject.Infrastructure.Language;
 
 namespace MiniDropbox.Web.Controllers
 {
@@ -32,11 +33,16 @@ namespace MiniDropbox.Web.Controllers
             //    return null;
             //}
 
-            var usersList = _readOnlyRepository.GetAll<Account>().Select(account => Mapper.Map<RegisteredUsersListModel>(account)).ToList();
+            var usersList = _readOnlyRepository.GetAll<Account>();
+            
+            var castedList = new List<RegisteredUsersListModel>();
 
-            //var castedList = usersList;
+            foreach (var account in usersList)
+            {
+                castedList.Add(Mapper.Map<RegisteredUsersListModel>(account));
+            }
 
-            return View(usersList);
+            return View(castedList);
         }
         
         public ActionResult BlockUser(long userId)
@@ -74,10 +80,10 @@ namespace MiniDropbox.Web.Controllers
 
         public ActionResult PackageManagement()
         {
-            if (Session["userType"].ToString() != "Admin")
-            {
-                return null;
-            }
+            //if (Session["userType"].ToString() != "Admin")
+            //{
+            //    return null;
+            //}
 
             return RedirectToAction("PackageList", "PackageList");
         }

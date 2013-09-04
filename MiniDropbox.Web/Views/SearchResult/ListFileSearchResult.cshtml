@@ -1,0 +1,92 @@
+﻿@using BootstrapSupport
+@using Microsoft.Ajax.Utilities
+@model List<MiniDropbox.Web.Models.FileSearchResult>
+
+@{
+    ViewBag.Title = "Search Result";
+    Layout = "~/Views/shared/_BootstrapLayout.basic.cshtml";
+}
+
+<div class="pull-right" style="padding-left: 10px">
+        @using (@Html.BeginForm("ListFileSearchResult", "SearchResult"))
+        {
+            <input type="text" id="searchTxt" name="searchTxt" class="input-medium inline search-query"/>
+            <button class="btn btn-inverse btn-small" type="submit">Search</button>       
+        }
+</div>
+
+<h2 style="text-align: center">Files List</h2>
+<label class="text-info">@Session["ActualPath"].ToString()</label>
+<table class="table table-striped">
+    <caption></caption>
+    <thead>
+        <tr>
+            <td></td>
+            @foreach (var property in Model[0].VisibleProperties())
+            {
+                <th>
+                    @property.GetLabel().ToSeparatedWords()
+                </th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    @{ int index = 0; }
+    @foreach (var model in Model)
+    {
+        ViewData[index.ToString()] = model;
+        <tr>
+            @if (string.IsNullOrEmpty(model.Type))
+            {
+                <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/folder.png" title=""/> </td>
+            }
+            else if (model.Type.Contains("jpeg"))
+            {
+                <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/file_extension_jpeg.png" title=""/></td>
+            }
+            else if (model.Type.Contains("png"))
+            {
+                 <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/file_extension_png.png" title=""/></td>
+            }
+            else
+            {
+                <td style="text-align: center; width: 32px"><img src="~/Content/images/Icons/document_empty.png" title=""/></td>
+            }
+
+            @foreach (var property in model.VisibleProperties())
+            {
+                <td>
+                    @if (property.Name == "Url")
+                    {
+                        @Html.ActionLink("" + @Html.Display(index + "." + property.Name), "ListFolderContent","Disk", new { @folderName = model.Url.Split('\\').LastOrDefault() }, new { @class = "btn-link" })
+                    }
+                    else
+                    {
+                         @Html.Display(index + "." + property.Name)
+                    }
+                </td>                    
+            }
+            <td>
+                @*<div class="btn-group ">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                        Action
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @{
+                            @Html.TryPartial("_actions", model)                            
+            var routevalues = model.GetIdValue();  
+                            <li>@Html.ActionLink("Details", "Details", routevalues)</li>
+                            <li class="divider"></li>
+                            <li>@Html.ActionLink("Delete", "DeleteFile", new { @fileId = routevalues.Values.FirstOrDefault() })</li>
+                               
+                        }
+                    </ul>
+                </div>*@
+
+            </td>
+        </tr>
+            index++;
+    }
+
+</table>

@@ -25,10 +25,10 @@ namespace MiniDropbox.Web.Controllers
         [HttpGet]
         public ActionResult PackageList()
         {
-            if (Session["userType"].ToString() != "Admin")
-            {
-                return null;
-            }
+            //if (Session["userType"].ToString() != "Admin")
+            //{
+            //    return null;
+            //}
 
             var packages = _readOnlyRepository.GetAll<Package>();
             var packagesModelList = new List<PackageModel>();

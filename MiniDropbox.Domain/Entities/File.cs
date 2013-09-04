@@ -12,5 +12,6 @@ namespace MiniDropbox.Domain
         public virtual DateTime CreatedDate { get; set; }
         public virtual DateTime ModifiedDate { get; set; }
         public virtual bool IsArchived { get; set; }
+        public virtual bool IsDirectory { get; set; }
     }
 }

@@ -7,6 +7,11 @@ namespace MiniDropbox.Web.Models
 {
     public class RegisteredUsersListModel
         {
+            public RegisteredUsersListModel()
+            {
+                
+            }
+
             public RegisteredUsersListModel(long id, bool isArchived, string name, string lastName, string eMail, bool blocked, int spaceLimit)
             {
                 SpaceLimit = spaceLimit;
@@ -17,7 +22,7 @@ namespace MiniDropbox.Web.Models
                 Archived = isArchived;
                 Id = id;
             }
-
+            
             public long Id { get; private set; }
             public string Name { get; private set; }
             public string LastName { get; private set; }

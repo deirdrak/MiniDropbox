@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using System.Web.Security;
 using BootstrapMvcSample.Controllers;
 using FluentSecurity;
 using MiniDropbox.Web.Controllers;
@@ -35,10 +36,10 @@ namespace MiniDropbox.Web.Infrastructure
                 configuration.For<PasswordResetController>().Ignore();
                 //configuration.For<DiskController>().RequireRole(new object[] { "User" });
 
-                //configuration.For<RegisteredUsersListController>().RequireRole(new object[] {"Admin"});
-                //configuration.For<PackageListController>().RequireRole(new object[] {"Admin"});
-                //configuration.For<CreateEditPackageController>().RequireRole(new object[] { "Admin" });
-                //configuration.For<ChangeUserSpaceLimitController>().RequireRole(new object[] { "Admin" });
+                configuration.For<RegisteredUsersListController>().RequireRole(new object[] { "Admin" });
+                configuration.For<PackageListController>().RequireRole(new object[] { "Admin" });
+                configuration.For<CreateEditPackageController>().RequireRole(new object[] { "Admin" });
+                configuration.For<ChangeUserSpaceLimitController>().RequireRole(new object[] { "Admin" });
 
                 configuration.ResolveServicesUsing(type =>
                 {

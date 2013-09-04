@@ -49,25 +49,22 @@ namespace MiniDropbox.Web.Controllers
                     Error("Your account is inactive, to activate it again send an e-mail to support@minidropbox.com");
                     return View();
                 }
-
-                //List<string> roles = result.Roles.Select(x => x.Name).ToList();
+                
                 var roles = result.IsAdmin
-                    ? new List<string>(new[] {"Admin","User1"})
-                    : new List<string>(new[] {"User","User2"});
+                    ? new List<string>(new[] {"Admin"})
+                    : new List<string>(new[] {"User"});
 
                 FormsAuthentication.SetAuthCookie(model.EMail, model.RememberMe);
-                //var y = FormsAuthentication.GetAuthCookie(model.EMail, model.RememberMe);
                 SetAuthenticationCookie(model.EMail, roles);
-                
-                //bool isInRole = User.IsInRole("Admin");
-                //bool isNormalUser = User.IsInRole("User");
-
+             
+            
                 if (result.IsAdmin)
                 {
                     return RedirectToAction("RegisteredUsersList", "RegisteredUsersList");
                 }
 
-
+                Session["ActualPath"] = result.EMail;
+                Session["ActualFolder"] = result.EMail;
                 return RedirectToAction("ListAllContent", "Disk");
             }
                 
@@ -75,8 +72,7 @@ namespace MiniDropbox.Web.Controllers
             Error("E-Mail or Password is incorrect!!!");
             return View();
         }
-
-       
+        
         public ActionResult SignUp()
         {
             return RedirectToAction("AccountSignUp", "AccountSignUp", new {token=0});

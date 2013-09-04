@@ -33,7 +33,8 @@ namespace MiniDropbox.Web.Infrastructure
             Mapper.CreateMap<Package,CreateEditPackageController>();
             Mapper.CreateMap<CreateEditPackageController, Package>();
 
-
+            Mapper.CreateMap<File, FileSearchResult>();
+            Mapper.CreateMap<FileSearchResult, File>();
 
         }
     }
