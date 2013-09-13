@@ -6,6 +6,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Services.Description;
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
 using AutoMapper;
 using BootstrapMvcSample.Controllers;
 using MiniDropbox.Domain;
@@ -20,6 +23,7 @@ namespace MiniDropbox.Web.Controllers
     {
         private readonly IReadOnlyRepository _readOnlyRepository;
         private readonly IWriteOnlyRepository _writeOnlyRepository;
+        AmazonS3 AWSClient = AWSClientFactory.CreateAmazonS3Client();
 
         public AccountSignUpController( IWriteOnlyRepository writeOnlyRepository, IReadOnlyRepository readOnlyRepository)
         {
@@ -57,19 +61,7 @@ namespace MiniDropbox.Web.Controllers
             account.IsBlocked = false;
             account.SpaceLimit = 500;
             account.Password = EncriptacionMD5.Encriptar(model.Password);
-
-            //var account = new Account
-            //{
-            //    Name = accountModel.Name,
-            //    LastName = accountModel.LastName,
-            //    EMail = accountModel.EMail,
-            //    IsArchived = false,
-            //    IsBlocked = false,
-            //    SpaceLimit = 500,
-            //    UsedSpace = 0,
-            //    Password = EncriptacionMD5.Encriptar(accountModel.Password) 
-            //};
-            //account.AddRole(new Role{Name = "User",IsArchived = false});
+            account.BucketName = string.Format("mdp.{0}", Guid.NewGuid());
 
            var createdAccount= _writeOnlyRepository.Create(account);
 
@@ -82,11 +74,19 @@ namespace MiniDropbox.Web.Controllers
                 _writeOnlyRepository.Update(userReferring);
             }
 
-            var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/" + account.EMail);
-            Directory.CreateDirectory(serverFolderPath);
+            
+            var newBucket = new PutBucketRequest { BucketName = account.BucketName };
+            AWSClient.PutBucket(newBucket);
 
-            var sharedDirectory =serverFolderPath + "/Shared";
-            Directory.CreateDirectory(sharedDirectory);
+            //var amazonAddress="http://"+account.BucketName+".s3.amazonaws.com";
+            var putFolder = new PutObjectRequest{BucketName = account.BucketName, Key = "Shared/",ContentBody = string.Empty};
+            AWSClient.PutObject(putFolder);
+
+            //var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/" + account.EMail);
+            //Directory.CreateDirectory(serverFolderPath);
+
+            //var sharedDirectory =serverFolderPath + "/Shared";
+            //Directory.CreateDirectory(sharedDirectory);
 
             if (createdAccount.Files == null)
             {
@@ -100,7 +100,7 @@ namespace MiniDropbox.Web.Controllers
                 IsArchived = false,
                 IsDirectory = true,
                 Name = "Shared",
-                Url = serverFolderPath,
+                Url = "",
                 Type = "",
                 ModifiedDate = DateTime.Now
             });

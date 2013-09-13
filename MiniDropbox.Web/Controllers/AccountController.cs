@@ -63,8 +63,8 @@ namespace MiniDropbox.Web.Controllers
                     return RedirectToAction("RegisteredUsersList", "RegisteredUsersList");
                 }
 
-                Session["ActualPath"] = result.EMail;
-                Session["ActualFolder"] = result.EMail;
+                Session["ActualPath"] = string.Empty;
+                Session["ActualFolder"] = string.Empty;
                 return RedirectToAction("ListAllContent", "Disk");
             }
                 

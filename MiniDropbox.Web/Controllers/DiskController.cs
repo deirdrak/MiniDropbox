@@ -6,6 +6,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
 using AutoMapper;
 using BootstrapMvcSample.Controllers;
 using BootstrapSupport;
@@ -23,6 +26,7 @@ namespace MiniDropbox.Web.Controllers
     {
         private readonly IReadOnlyRepository _readOnlyRepository;
         private readonly IWriteOnlyRepository _writeOnlyRepository;
+        AmazonS3 AWSClient = AWSClientFactory.CreateAmazonS3Client();
 
         public DiskController(IWriteOnlyRepository writeOnlyRepository, IReadOnlyRepository readOnlyRepository)
         {
@@ -35,7 +39,12 @@ namespace MiniDropbox.Web.Controllers
         {
             //var actualPath = Session["ActualPath"].ToString();
             var actualFolder = Session["ActualFolder"].ToString();
-            var userFiles = _readOnlyRepository.First<Account>(x=>x.EMail==User.Identity.Name).Files;
+            var userData = _readOnlyRepository.First<Account>(x => x.EMail == User.Identity.Name);
+            var userFiles = userData.Files;
+            //var amazonAddress = "http://" + userData.BucketName + ".s3.amazonaws.com";
+
+            //var objectsRequest = new ListObjectsRequest {BucketName = userData.BucketName};
+            //var objects = AWSClient.ListObjects(objectsRequest);
 
             var userContent = new List<DiskContentModel>();
 
@@ -44,7 +53,8 @@ namespace MiniDropbox.Web.Controllers
                 if (file == null)
                     continue;
 
-                var fileFolder = file.Url.Split('\\').LastOrDefault();
+                var fileFolderArray = file.Url.Split('/');
+                var fileFolder =fileFolderArray.Length>1?fileFolderArray[fileFolderArray.Length-2]:fileFolderArray.FirstOrDefault();
 
                 if(!file.IsArchived && fileFolder.Equals(actualFolder) && !string.Equals(file.Name,actualFolder))
                     userContent.Add(Mapper.Map<DiskContentModel>(file));
@@ -91,7 +101,8 @@ namespace MiniDropbox.Web.Controllers
             var actualPath = Session["ActualPath"].ToString();
             var fileName = Path.GetFileName(fileControl.FileName);
 
-            var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/"+actualPath);
+            //var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/"+actualPath);
+           
             //var directoryInfo = new DirectoryInfo(serverFolderPath);
 
             //if (!directoryInfo.Exists)
@@ -116,16 +127,17 @@ namespace MiniDropbox.Web.Controllers
             //    });
             //}
 
-            var path = Path.Combine(serverFolderPath, fileName);
+            //var path = Path.Combine(serverFolderPath, fileName);
 
-            var fileInfo = new DirectoryInfo(serverFolderPath+fileName);
+            //var fileInfo = new DirectoryInfo(serverFolderPath+fileName);
 
-            if (fileInfo.Exists)
+            if (userData.Files.Count(l=>l.Name==fileName)>0)//Actualizar Info Archivo
             {
                 var bddInfo = userData.Files.FirstOrDefault(f => f.Name == fileName);
                 bddInfo.ModifiedDate = DateTime.Now;
                 bddInfo.Type = fileControl.ContentType;
                 bddInfo.FileSize = fileSize;
+                _writeOnlyRepository.Update(bddInfo);
             }
             else
             {
@@ -136,14 +148,16 @@ namespace MiniDropbox.Web.Controllers
                     ModifiedDate = DateTime.Now,
                     FileSize = fileSize,
                     Type = fileControl.ContentType,
-                    Url = serverFolderPath,
+                    Url = actualPath,
                     IsArchived = false,
                     IsDirectory = false
                 });
+                _writeOnlyRepository.Update(userData);
             }
 
-            fileControl.SaveAs(path);
-            _writeOnlyRepository.Update(userData);
+            //fileControl.SaveAs(path);
+            var putObjectRequest = new PutObjectRequest { BucketName = userData.BucketName, Key = actualPath + fileName, InputStream = fileControl.InputStream };
+            AWSClient.PutObject(putObjectRequest);
 
             Success("File uploaded successfully!!! :D");
             return RedirectToAction("ListAllContent");
@@ -177,23 +191,26 @@ namespace MiniDropbox.Web.Controllers
             }
 
             var userData = _readOnlyRepository.First<Account>(x => x.EMail == User.Identity.Name);
-
-            if (folderName == userData.EMail)
+            
+            if (userData.Files.Count(l=>l.Name==folderName)>0)
             {
                 Error("Folder already exists!!!");
                 return RedirectToAction("ListAllContent");
             }
 
             var actualPath = Session["ActualPath"].ToString();
-            var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/" + actualPath + "/"+folderName);
 
-            var folderInfo = new DirectoryInfo(serverFolderPath);
+            var putFolder = new PutObjectRequest { BucketName = userData.BucketName, Key = actualPath+folderName+"/", ContentBody = string.Empty };
+            AWSClient.PutObject(putFolder);
+            //var serverFolderPath = Server.MapPath("~/App_Data/UploadedFiles/" + actualPath + "/"+folderName);
 
-            if (folderInfo.Exists)
-            {
-                Error("Folder already exists!!!");
-                return RedirectToAction("ListAllContent");
-            }
+            //var folderInfo = new DirectoryInfo(serverFolderPath);
+
+            //if (folderInfo.Exists)
+            //{
+            //    Error("Folder already exists!!!");
+            //    return RedirectToAction("ListAllContent");
+            //}
 
             
             userData.Files.Add(new File
@@ -205,33 +222,33 @@ namespace MiniDropbox.Web.Controllers
                 IsDirectory = true,
                 ModifiedDate = DateTime.Now,
                 Type = "",
-                Url = Server.MapPath("~/App_Data/UploadedFiles/" + actualPath)
+                Url = actualPath
             });
 
-            var result=Directory.CreateDirectory(serverFolderPath);
+            //var result=Directory.CreateDirectory(serverFolderPath);
 
-            if(!result.Exists)
-                Error("The folder was not created!!! Try again please!!!");
-            else
-            {
+            //if(!result.Exists)
+            //    Error("The folder was not created!!! Try again please!!!");
+            //else
+            //{
                 Success("The folder was created successfully!!!");
                 _writeOnlyRepository.Update(userData);
-            }
+            //}
 
             return RedirectToAction("ListAllContent");
         }
         
         public ActionResult ListFolderContent(string folderName)
         {
-            Session["ActualPath"] += "/" + folderName;
+            Session["ActualPath"] += folderName + "/";
             Session["ActualFolder"] = folderName;
             return RedirectToAction("ListAllContent");
         }
 
         public ActionResult ListAllContentRoot()
         {
-            Session["ActualPath"] = User.Identity.Name;
-            Session["ActualFolder"] = User.Identity.Name;
+            Session["ActualPath"] = string.Empty;
+            Session["ActualFolder"] = string.Empty;
             return RedirectToAction("ListAllContent");
         }
 

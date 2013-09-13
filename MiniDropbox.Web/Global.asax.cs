@@ -60,7 +60,7 @@ namespace MiniDropbox.Web
                                                                           ConnectionString(
                                                                               x =>
                                                                               x.FromConnectionStringWithKey(
-                                                                                  "MiniDropbox.Remote"));
+                                                                                  "MiniDropbox.Local"));
             ISessionFactory sessionFactory = new SessionFactoryBuilder(new MappingScheme(), databaseConfiguration)
                 .Build();
 
