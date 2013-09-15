@@ -6,8 +6,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Services.Description;
-using Amazon;
-using Amazon.S3;
 using Amazon.S3.Model;
 using AutoMapper;
 using BootstrapMvcSample.Controllers;
@@ -23,7 +21,7 @@ namespace MiniDropbox.Web.Controllers
     {
         private readonly IReadOnlyRepository _readOnlyRepository;
         private readonly IWriteOnlyRepository _writeOnlyRepository;
-        AmazonS3 AWSClient = AWSClientFactory.CreateAmazonS3Client();
+        
 
         public AccountSignUpController( IWriteOnlyRepository writeOnlyRepository, IReadOnlyRepository readOnlyRepository)
         {
@@ -77,8 +75,7 @@ namespace MiniDropbox.Web.Controllers
             
             var newBucket = new PutBucketRequest { BucketName = account.BucketName };
             AWSClient.PutBucket(newBucket);
-
-            //var amazonAddress="http://"+account.BucketName+".s3.amazonaws.com";
+           
             var putFolder = new PutObjectRequest{BucketName = account.BucketName, Key = "Shared/",ContentBody = string.Empty};
             AWSClient.PutObject(putFolder);
 

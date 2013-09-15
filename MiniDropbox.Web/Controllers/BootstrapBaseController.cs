@@ -6,11 +6,16 @@ using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Security;
 using BootstrapSupport;
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
 
 namespace BootstrapMvcSample.Controllers
 {
     public class BootstrapBaseController: Controller
     {
+        public readonly AmazonS3 AWSClient = AWSClientFactory.CreateAmazonS3Client();
+
         public void Attention(string message)
         {
             TempData.Add(Alerts.ATTENTION, message);

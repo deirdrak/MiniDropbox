@@ -1,23 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
-using Amazon;
-using Amazon.S3;
 using Amazon.S3.Model;
 using AutoMapper;
 using BootstrapMvcSample.Controllers;
-using BootstrapSupport;
-using FizzWare.NBuilder;
-using FluentNHibernate.Testing.Values;
 using MiniDropbox.Domain;
 using MiniDropbox.Domain.Services;
 using MiniDropbox.Web.Models;
-using NHibernate.Mapping;
 using File = MiniDropbox.Domain.File;
 
 namespace MiniDropbox.Web.Controllers
@@ -26,7 +19,6 @@ namespace MiniDropbox.Web.Controllers
     {
         private readonly IReadOnlyRepository _readOnlyRepository;
         private readonly IWriteOnlyRepository _writeOnlyRepository;
-        AmazonS3 AWSClient = AWSClientFactory.CreateAmazonS3Client();
 
         public DiskController(IWriteOnlyRepository writeOnlyRepository, IReadOnlyRepository readOnlyRepository)
         {
@@ -41,10 +33,6 @@ namespace MiniDropbox.Web.Controllers
             var actualFolder = Session["ActualFolder"].ToString();
             var userData = _readOnlyRepository.First<Account>(x => x.EMail == User.Identity.Name);
             var userFiles = userData.Files;
-            //var amazonAddress = "http://" + userData.BucketName + ".s3.amazonaws.com";
-
-            //var objectsRequest = new ListObjectsRequest {BucketName = userData.BucketName};
-            //var objects = AWSClient.ListObjects(objectsRequest);
 
             var userContent = new List<DiskContentModel>();
 
@@ -170,8 +158,12 @@ namespace MiniDropbox.Web.Controllers
 
             if (fileToDelete != null)
             {
+                var deleteRequest = new DeleteObjectRequest{BucketName = userData.BucketName, Key = fileToDelete.Url+fileToDelete.Name};
+                AWSClient.DeleteObject(deleteRequest);
                 
-                System.IO.File.Delete(fileToDelete.Url+fileToDelete.Name);
+                //Borrar carpetas, mandar mensaje de confirmacion para eliminar cuando esta vacia y cuando contiene algun archivo
+
+                //System.IO.File.Delete(fileToDelete.Url+fileToDelete.Name);
 
                 fileToDelete.IsArchived = true;
 
@@ -254,11 +246,17 @@ namespace MiniDropbox.Web.Controllers
 
         public ActionResult DownloadFile(int fileId)
         {
-            var fileData = _readOnlyRepository.First<Account>(x => x.EMail == User.Identity.Name).Files.FirstOrDefault(f => f.Id == fileId);
-            
-            var template_file = System.IO.File.ReadAllBytes(fileData.Url+"/"+fileData.Name);
-        
-            return new FileContentResult(template_file, fileData.Type){
+            var userData =_readOnlyRepository.First<Account>(a => a.EMail == User.Identity.Name);
+            var fileData = userData.Files.FirstOrDefault(f => f.Id == fileId);
+
+            var objectRequest = new GetObjectRequest{BucketName =userData.BucketName,Key = fileData.Url+fileData.Name};
+            var file=AWSClient.GetObject(objectRequest);
+            var byteArray = new byte[file.ContentLength];
+            file.ResponseStream.Read(byteArray, 0,(int)file.ContentLength);
+            //var template_file = System.IO.File.ReadAllBytes();
+
+            return new FileContentResult(byteArray, fileData.Type)
+            {
             FileDownloadName = fileData.Name};
 
         }
