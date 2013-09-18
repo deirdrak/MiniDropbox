@@ -144,7 +144,13 @@ namespace MiniDropbox.Web.Controllers
             }
 
             //fileControl.SaveAs(path);
-            var putObjectRequest = new PutObjectRequest { BucketName = userData.BucketName, Key = actualPath + fileName, InputStream = fileControl.InputStream };
+            var putObjectRequest = new PutObjectRequest
+            {
+                BucketName = userData.BucketName,
+                Key = actualPath + fileName,
+                InputStream = fileControl.InputStream
+            };
+
             AWSClient.PutObject(putObjectRequest);
 
             Success("File uploaded successfully!!! :D");
@@ -158,8 +164,11 @@ namespace MiniDropbox.Web.Controllers
 
             if (fileToDelete != null)
             {
-                var deleteRequest = new DeleteObjectRequest{BucketName = userData.BucketName, Key = fileToDelete.Url+fileToDelete.Name};
-                AWSClient.DeleteObject(deleteRequest);
+                if (!fileToDelete.IsDirectory)
+                {
+                    var deleteRequest = new DeleteObjectRequest { BucketName = userData.BucketName, Key = fileToDelete.Url + fileToDelete.Name };
+                    AWSClient.DeleteObject(deleteRequest);    
+                }
                 
                 //Borrar carpetas, mandar mensaje de confirmacion para eliminar cuando esta vacia y cuando contiene algun archivo
 
