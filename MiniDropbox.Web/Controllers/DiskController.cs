@@ -119,7 +119,7 @@ namespace MiniDropbox.Web.Controllers
 
             //var fileInfo = new DirectoryInfo(serverFolderPath+fileName);
 
-            if (userData.Files.Count(l=>l.Name==fileName)>0)//Actualizar Info Archivo
+            if (userData.Files.Count(l=>l.Name==fileName && l.Url.EndsWith(actualPath) && !l.IsArchived)>0)//Actualizar Info Archivo
             {
                 var bddInfo = userData.Files.FirstOrDefault(f => f.Name == fileName);
                 bddInfo.ModifiedDate = DateTime.Now;
@@ -166,16 +166,55 @@ namespace MiniDropbox.Web.Controllers
             {
                 if (!fileToDelete.IsDirectory)
                 {
-                    var deleteRequest = new DeleteObjectRequest { BucketName = userData.BucketName, Key = fileToDelete.Url + fileToDelete.Name };
-                    AWSClient.DeleteObject(deleteRequest);    
+                    var deleteRequest = new DeleteObjectRequest
+                    {
+                        BucketName = userData.BucketName,
+                        Key = fileToDelete.Url + fileToDelete.Name
+                    };
+                    AWSClient.DeleteObject(deleteRequest);
+                    fileToDelete.IsArchived = true;
                 }
-                
-                //Borrar carpetas, mandar mensaje de confirmacion para eliminar cuando esta vacia y cuando contiene algun archivo
+                else//Borrar carpeta con todos sus archivos
+                {
+                    DeleteFolder(fileToDelete.Id);
+                    //var filesList = new List<KeyVersion>();
+                    //var userFiles = userData.Files;
 
-                //System.IO.File.Delete(fileToDelete.Url+fileToDelete.Name);
+                    //foreach (var file in userFiles)
+                    //{
+                    //    if (file == null)
+                    //        continue;
 
-                fileToDelete.IsArchived = true;
+                    //    var fileFolderArray = file.Url.Split('/');
+                    //    var fileFolder = fileFolderArray.Length > 1 ? fileFolderArray[fileFolderArray.Length - 2] : fileFolderArray.FirstOrDefault();
 
+                    //    if (!file.IsArchived && fileFolder.Equals(fileToDelete.Name) &&
+                    //        !string.Equals(file.Name, fileToDelete.Name))
+                    //    {
+                    //        filesList.Add(!file.IsDirectory ? new KeyVersion(file.Url + file.Name) : new KeyVersion(file.Url+file.Name + "/"));
+                    //        file.IsArchived = true;
+                    //    }
+
+                    fileToDelete.IsArchived = true;
+                    //}
+
+                    //filesList.Add(new KeyVersion(fileToDelete.Name+"/"));
+
+                    //var deleteRequest = new DeleteObjectsRequest
+                    //{
+                    //    BucketName = userData.BucketName,
+                    //    Keys = filesList
+                    //};
+
+                    //AWSClient.DeleteObjects(deleteRequest);
+
+                        var deleteRequest = new DeleteObjectRequest
+                        {
+                            BucketName = userData.BucketName,
+                            Key = fileToDelete.Url + fileToDelete.Name+"/"
+                        };
+                        AWSClient.DeleteObject(deleteRequest);
+                }
                 _writeOnlyRepository.Update(userData);
             }
 
@@ -237,6 +276,63 @@ namespace MiniDropbox.Web.Controllers
             //}
 
             return RedirectToAction("ListAllContent");
+        }
+
+        public void DeleteFolder(long folderId)
+        {
+            var userData = _readOnlyRepository.First<Account>(a => a.EMail == User.Identity.Name);
+            var folderToDelete = userData.Files.FirstOrDefault(f => f.Id == folderId);
+
+            //if (!folderToDelete.IsDirectory)
+            //    {
+            //        var deleteRequest = new DeleteObjectRequest
+            //        {
+            //            BucketName = userData.BucketName,
+            //            Key = fileToDelete.Url + fileToDelete.Name
+            //        };
+            //        AWSClient.DeleteObject(deleteRequest);
+            //        fileToDelete.IsArchived = true;
+            //    }
+            //    else
+            //    {
+                    var userFiles = userData.Files.Where(t=>t.Url.Contains(folderToDelete.Name));
+
+                    foreach (var file in userFiles)
+                    {
+                        if (file == null)
+                            continue;
+
+                        if(file.IsDirectory)
+                            DeleteFolder(file.Id);
+                        
+                        var fileFolderArray = file.Url.Split('/');
+                        var fileFolder = fileFolderArray.Length > 1 ? fileFolderArray[fileFolderArray.Length - 2] : fileFolderArray.FirstOrDefault();
+
+                        if (!file.IsArchived && fileFolder.Equals(folderToDelete.Name) &&
+                            !string.Equals(file.Name, folderToDelete.Name))
+                        {
+                            var deleteRequest = new DeleteObjectRequest
+                            {
+                                BucketName = userData.BucketName,
+                                Key = file.Url + file.Name
+                            };
+                            AWSClient.DeleteObject(deleteRequest);
+                            file.IsArchived = true;
+                            _writeOnlyRepository.Update(userData);
+                        }
+                    }
+
+                    folderToDelete.IsArchived = true;
+                    var deleteRequest2 = new DeleteObjectRequest
+                    {
+                        BucketName = userData.BucketName,
+                        Key = folderToDelete.Url + folderToDelete.Name + "/"
+                    };
+                    AWSClient.DeleteObject(deleteRequest2);
+                    _writeOnlyRepository.Update(userData);
+            //}
+            
+
         }
         
         public ActionResult ListFolderContent(string folderName)

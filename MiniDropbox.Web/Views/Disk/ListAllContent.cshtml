@@ -26,7 +26,10 @@
     
     function showFileDeleteMessage(fileId) {
         var divOptions = $("#Options");
-        divOptions.append("@Html.ActionLink("Delete", "DeleteFile", "Disk", new { @class = "btn btn-primary" })");
+        divOptions.empty();
+        var link = "<a class=\"btn btn-primary\" href=\"/Disk/DeleteFile?fileId=cui\">Delete</a>";
+        link = link.replace("cui", fileId);
+        divOptions.append(link);
         divOptions.append("<a class=\"btn btn-danger\" href=\"#\" data-dismiss=\"modal\">Close</a>");
         
         
@@ -137,15 +140,15 @@
                     <ul class="dropdown-menu">
                         @{
                             @Html.TryPartial("_actions", model)                            
-                            var routevalues = model.GetIdValue();
+            var routevalues = model.GetIdValue();
 
-                            if (!string.IsNullOrEmpty(model.Type))
-                            {
-                                <li>@Html.ActionLink("Download", "DownloadFile", new {@fileId=routevalues.Values.FirstOrDefault()})</li>
-                            }
+            if (!string.IsNullOrEmpty(model.Type))
+            {
+                                <li>@Html.ActionLink("Download", "DownloadFile", new { @fileId = routevalues.Values.FirstOrDefault() })</li>
+            }
                                 
                             @*<li class="divider"></li>*@
-                            @*<li>@Html.ActionLink("Delete", "DeleteFile", new { @fileId = routevalues.Values.FirstOrDefault() })</li>*@
+                            <li>@Html.ActionLink("Delete1", "DeleteFile", new { @fileId = routevalues.Values.FirstOrDefault() })</li>
                             <li><a href="#" onclick="showFileDeleteMessage(@routevalues.Values.FirstOrDefault())">Delete</a></li>   
                             
                         }
@@ -166,6 +169,7 @@
 <div class="modal hide fade in modal-form" id="FileDeleteMessage">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3>Delete File</h3>
     </div>
     <div>
         <div class="modal-body">
